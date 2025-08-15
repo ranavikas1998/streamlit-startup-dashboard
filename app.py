@@ -36,5 +36,15 @@ st.json({
     "marks":[50,60,70],
     "package":[10,12,14]
 })
-st.image("campusx.jpg")
+#st.image("campusx.jpg")
 # st.video("newvideo.mp4")
+
+st.sidebar.title("Sidebar Title")
+col1,col2,col3=st.columns(3)
+
+with col1:
+    st.image("campusx.jpg")
+with col2:
+    st.image("campusx.jpg")
+with col3:
+    st.image("campusx.jpg")
