@@ -16,8 +16,10 @@ if option =="Overall Analysis":
 elif option =="Startup":
     st.sidebar.selectbox("Select Startup",sorted(df["Startup Name"].unique().tolist())) # convert to the list
     st.title("Startup Analysis")
+    btn1=st.sidebar.button("Find Startup Details")
     pass
 else:
     st.sidebar.selectbox("Select Startup",sorted(df["Investors Name"].unique().tolist()) )
+    btn2=st.sidebar.button("Find Investor Details")
     st.title("Investor Analysis")
 
