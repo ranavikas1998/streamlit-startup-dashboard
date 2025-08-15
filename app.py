@@ -9,6 +9,7 @@ st.set_page_config(layout="wide",page_title="Startup Analysis")  # take the spac
 
 file_path = os.path.join(os.path.dirname(__file__), "data", "startup_cleaned.csv")
 df = pd.read_csv(file_path)
+df["date"] = pd.to_datetime(df["date"], errors="coerce")
 def load_investor_details(investor):
     st.title(investor)
 
@@ -32,20 +33,28 @@ def load_investor_details(investor):
         vertical_series = df[df["Investors"].str.contains("Investors")] \
             .groupby("vertical")["amount"].sum().sort_values(ascending=False).head()
 
-        st.subheader("Biggest Investments by Vertical")
+        st.subheader("Sectors invested in Vertical")
         fig1, ax1 = plt.subplots()
         ax1.pie(vertical_series.values,labels=vertical_series.index, autopct="%0.1f%%") # autopct give the percentage and label give the name
         st.pyplot(fig1)
 
     with col3:
         # biggest investments by vertical
-        horizontol_series = df[df["Investors"].str.contains("Investors")] \
+        city_series = df[df["Investors"].str.contains("Investors")] \
             .groupby("city")["amount"].sum().sort_values(ascending=False).head()
 
-        st.subheader("Biggest Investments by City")
+        st.subheader("Sector invest in City")
         fig2, ax1 = plt.subplots()
         ax1.pie(vertical_series.values,labels=vertical_series.index, autopct="%0.1f%%") # autopct give the percentage and label give the name
         st.pyplot(fig2)
+
+    df["year"] = df["date"].dt.year
+    year_series=df[df["Investors"].str.contains("Investors",na=False)].groupby("year")["amount"].sum()
+
+    st.subheader("year on Year(YOY) Investments")
+    fig3, ax3 = plt.subplots()
+    ax3.plot(year_series.index,year_series.values)
+    st.pyplot(fig3)
 
     st.dataframe(big_series) # for give the biggest  5 tabeluer form data
 
