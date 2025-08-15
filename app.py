@@ -6,6 +6,13 @@ file_path = os.path.join(os.path.dirname(__file__), "data", "startup_cleaned.csv
 df = pd.read_csv(file_path)
 def load_investor_details(investor):
     st.title(investor)
+#  Load the recent 5 investments of the investor
+    last5_df=df[df["Investors"].str.contains("Investors")][["date", "startup", "vertical", "city", "amount"]].head()
+    st.subheader("Most Recent Investors")
+    st.dataframe(last5_df)
+
+
+
 # data cleaning
 #df["Investors Name"]=df["Investors Name"].fillna("undisclosed")
 #st.dataframe(df)
@@ -25,5 +32,5 @@ else:
     btn2=st.sidebar.button("Find Investor Details")
     if btn2 :
         load_investor_details(selected_investor)
-    
+
 
