@@ -1,16 +1,9 @@
 import streamlit as st
+import pandas as pd
 
-email =st.text_input("enter email")
-password=st.text_input("enter password")
+file=st.file_uploader("upload a csv  file")
 
-btn=st.button("login")
-
-# if the button is clicked
-if btn:
-    if email=="ranavikas1998@gmail.com" and password=="1234":
-        st.success("Login Successful")
-        st.balloons()
-    else:
-        st.error("Login Failed")
-
+if file is not  None:
+    df= pd.read_csv(file)
+    st.dataframe(df.describe())
 

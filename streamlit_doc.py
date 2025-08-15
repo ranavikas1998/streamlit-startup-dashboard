@@ -62,3 +62,18 @@ for i in range(1,101):
 email=st.text_input("Enter email")
 number=st.number_input("Enter Age")
 st.date_input("Enter registration date")
+
+email =st.text_input("enter email")
+password=st.text_input("enter password")
+gender=st.selectbox("Select gender",["male","female","other"])
+
+btn=st.button("login")
+
+# if the button is clicked
+if btn:
+    if email=="ranavikas1998@gmail.com" and password=="1234":
+        st.success("Login Successful")
+        st.balloons()
+        st.write(gender)
+    else:
+        st.error("Login Failed")
