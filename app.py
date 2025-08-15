@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import os
 
-file_path = os.path.join(os.path.dirname(__file__), "data", "startup_funding.csv")
+file_path = os.path.join(os.path.dirname(__file__), "data", "startup_cleaned.csv")
 df = pd.read_csv(file_path)
 # data cleaning
-df["Investors Name"]=df["Investors Name"].fillna("undisclosed")
+#df["Investors Name"]=df["Investors Name"].fillna("undisclosed")
 #st.dataframe(df)
 
 st.sidebar.title("Startup Funding Analysis")
@@ -14,12 +14,12 @@ if option =="Overall Analysis":
     st.title("Overall Analysis")
     pass
 elif option =="Startup":
-    st.sidebar.selectbox("Select Startup",sorted(df["Startup Name"].unique().tolist())) # convert to the list
+    st.sidebar.selectbox("Select Startup",sorted(df["startup"].unique().tolist())) # convert to the list
     st.title("Startup Analysis")
     btn1=st.sidebar.button("Find Startup Details")
     pass
 else:
-    st.sidebar.selectbox("Select Startup",sorted(df["Investors Name"].unique().tolist()) )
+    st.sidebar.selectbox("Select Startup",sorted(set(df["Investors"].str.split(",").sum())))
     btn2=st.sidebar.button("Find Investor Details")
     st.title("Investor Analysis")
 
