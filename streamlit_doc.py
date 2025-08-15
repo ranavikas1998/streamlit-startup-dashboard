@@ -77,3 +77,9 @@ if btn:
         st.write(gender)
     else:
         st.error("Login Failed")
+
+file=st.file_uploader("upload a csv  file")
+
+if file is not  None:
+    df= pd.read_csv(file)
+    st.dataframe(df.describe())
