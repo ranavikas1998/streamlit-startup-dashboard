@@ -1,3 +1,5 @@
+from tkinter.constants import HORIZONTAL
+
 import streamlit as st
 import pandas as pd
 import os
@@ -15,7 +17,7 @@ def load_investor_details(investor):
     st.subheader("Most Recent Investors")
     st.dataframe(last5_df)
 
-    col1,col2=st.columns(2)     # for reduce space
+    col1,col2,col3=st.columns(3)     # for reduce space
     with col1:
     # biggest investments
         big_series=df[df["Investors"].str.contains("investor")].groupby("startup")["amount"].sum().sort_values(ascending=False).head()
@@ -35,6 +37,15 @@ def load_investor_details(investor):
         ax1.pie(vertical_series.values,labels=vertical_series.index, autopct="%0.1f%%") # autopct give the percentage and label give the name
         st.pyplot(fig1)
 
+    with col3:
+        # biggest investments by vertical
+        horizontol_series = df[df["Investors"].str.contains("Investors")] \
+            .groupby("city")["amount"].sum().sort_values(ascending=False).head()
+
+        st.subheader("Biggest Investments by City")
+        fig2, ax1 = plt.subplots()
+        ax1.pie(vertical_series.values,labels=vertical_series.index, autopct="%0.1f%%") # autopct give the percentage and label give the name
+        st.pyplot(fig2)
 
     st.dataframe(big_series) # for give the biggest  5 tabeluer form data
 
