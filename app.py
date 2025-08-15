@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import time
 
 st.title("startup Dashboard")
 st.header("I am  learning streamlit")
@@ -48,3 +49,13 @@ with col2:
     st.image("campusx.jpg")
 with col3:
     st.image("campusx.jpg")
+
+st.error("Login Failed")
+st.success("Login Successful")
+st.info("Login Successful")
+st.warning("Login Successful")
+
+bar=st.progress(0)
+for i in range(1,101):
+    time.sleep(0.1)
+    bar.progress(i)
