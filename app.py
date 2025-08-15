@@ -15,7 +15,7 @@ def load_investor_details(investor):
     st.subheader("Most Recent Investors")
     st.dataframe(last5_df)
 
-    col1,col2=st.columns(2)
+    col1,col2=st.columns(2)     # for reduce space
     with col1:
     # biggest investments
         big_series=df[df["Investors"].str.contains("investor")].groupby("startup")["amount"].sum().sort_values(ascending=False).head()
@@ -24,6 +24,17 @@ def load_investor_details(investor):
         fig,ax=plt.subplots()
         ax.bar(big_series.index,big_series.values)
         st.pyplot(fig)
+
+    with col2:
+        # biggest investments by vertical
+        vertical_series = df[df["Investors"].str.contains("Investors")] \
+            .groupby("vertical")["amount"].sum().sort_values(ascending=False).head()
+
+        st.subheader("Biggest Investments by Vertical")
+        fig1, ax1 = plt.subplots()
+        ax1.pie(vertical_series.values,labels=vertical_series.index, autopct="%0.1f%%") # autopct give the percentage and label give the name
+        st.pyplot(fig1)
+
 
     st.dataframe(big_series) # for give the biggest  5 tabeluer form data
 
