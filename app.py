@@ -4,6 +4,8 @@ import os
 
 file_path = os.path.join(os.path.dirname(__file__), "data", "startup_cleaned.csv")
 df = pd.read_csv(file_path)
+def load_investor_details(investor):
+    st.title(investor)
 # data cleaning
 #df["Investors Name"]=df["Investors Name"].fillna("undisclosed")
 #st.dataframe(df)
@@ -19,7 +21,9 @@ elif option =="Startup":
     btn1=st.sidebar.button("Find Startup Details")
     pass
 else:
-    st.sidebar.selectbox("Select Startup",sorted(set(df["Investors"].str.split(",").sum())))
+    selected_investor=st.sidebar.selectbox("Select Startup",sorted(set(df["Investors"].str.split(",").sum())))
     btn2=st.sidebar.button("Find Investor Details")
-    st.title("Investor Analysis")
+    if btn2 :
+        load_investor_details(selected_investor)
+    
 
