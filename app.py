@@ -33,16 +33,24 @@ def load_overall_analysis():                # last step find  out month to month
     with col4:
         st.metric("Funded Startups", num_startups)
 
-    st.header("Month on Month(Mom) graph")
-    selected_option=st.selectbox("Select Type",["Total","Count"])
-    if selected_option =="Total":
-        temp_df = df.groupby(["year", "month"])["amount"].sum().reset_index()
+    st.header("Month on Month (MoM) graph")
+    selected_option = st.selectbox("Select Type", ["Total", "Count"])
+
+    if selected_option == "Total":
+        temp_df = df.groupby(df["date"].dt.to_period("M"))["amount"].sum().reset_index()
     else:
-        temp_df = df.groupby(["year", "month"])["amount"].count().reset_index()
-    # amount wise funding
-    temp_df["x_axis"] = temp_df["month"].astype("str") + "-" + temp_df["year"].astype("str")
-    fig4, ax4 = plt.subplots()
-    ax4.bar(temp_df["x_axis"], temp_df["amount"].values)
+        temp_df = df.groupby(df["date"].dt.to_period("M"))["amount"].count().reset_index()
+
+    # Month-Year column
+    temp_df["month_year"] = temp_df["date"].astype(str)
+
+    # Plot
+    fig4, ax4 = plt.subplots(figsize=(12, 6))
+    ax4.bar(temp_df["month_year"], temp_df["amount"].values, color="skyblue")
+
+    plt.xticks(rotation=90)
+    ax4.set_xlabel("Month-Year")
+    ax4.set_ylabel("Funding Amount (Cr)" if selected_option == "Total" else "Number of Deals")
     st.pyplot(fig4)
 
 
@@ -110,10 +118,76 @@ if option =="Overall Analysis":
 
 
 elif option =="Startup":
-    st.sidebar.selectbox("Select Startup",sorted(df["startup"].unique().tolist())) # convert to the list
+    startup_names = df["startup"].dropna().unique()
+    selected_startup=st.sidebar.selectbox("Select Startup",sorted(df["startup"].unique().tolist())) # convert to the list
     st.title("Startup Analysis")
     btn1=st.sidebar.button("Find Startup Details")
-    pass
+
+    col1,col2=st.columns(2)
+
+    if btn1:
+        st.subheader(f"details for {selected_startup}")
+        temp_df = df[df["startup"] == selected_startup][["date", "Investors", "amount", "vertical", "city"]]
+        st.dataframe(temp_df)
+
+        col1, col2 = st.columns(2)  # <- columns yahin banao
+
+        with col1:
+            st.subheader("Funding Summary")
+            st.write(f"Total Funding: {temp_df['amount'].sum()} Cr")
+            st.write(f"Max Round: {temp_df['amount'].max()} Cr")
+
+            # Line chart (Funding Trend)
+            st.subheader("Funding Trend Over Time")
+            trend_df = temp_df.copy()
+            trend_df["date"] = pd.to_datetime(trend_df["date"], errors="coerce")  #  string → datetime
+            trend_df = trend_df.groupby("date")["amount"].sum().reset_index()
+            trend_df = trend_df[trend_df["amount"] > 0]
+
+            trend_df = trend_df.sort_values("date")  #  sort by date
+
+            fig, ax = plt.subplots()
+            ax.plot(trend_df["date"], trend_df["amount"], marker="o", linestyle="-")
+            ax.set_xlabel("Date")
+            ax.set_ylabel("Funding Amount (Cr)")
+            ax.set_title(f"Funding Trend for {selected_startup}")
+            plt.xticks(rotation=45)
+
+            st.pyplot(fig)
+
+        with col2:
+            st.subheader("Other Info")
+            # Rounds count
+            rounds = temp_df[["date", "amount"]].drop_duplicates().shape[0]
+
+            # Unique Investors nikalne ke liye split + explode
+            investors_expanded = temp_df.assign(
+                Investors=temp_df["Investors"].str.split(",")
+            ).explode("Investors")
+            investors_expanded["Investors"] = investors_expanded["Investors"].str.strip()
+
+            st.write(f"Number of Rounds: {rounds}")
+            st.write(f"Unique Investors: {investors_expanded['Investors'].nunique()}")
+
+            # Investor Participation bar chart (count of rounds)
+            st.subheader("Investor Participation (Number of Rounds)")
+
+            investor_participation = investors_expanded.groupby("Investors")["date"].count().reset_index()
+            investor_participation = investor_participation.sort_values("date", ascending=False)
+
+            fig2, ax2 = plt.subplots()
+            ax2.bar(investor_participation["Investors"], investor_participation["date"], color="skyblue")
+            for i, row in investor_participation.iterrows():
+                ax2.text(i, row["date"] + 0.05, row["date"], ha="center", fontsize=8)
+
+            ax2.set_xlabel("Investors")
+            ax2.set_ylabel("Number of Rounds")
+            ax2.set_title(f"Investor Participation for {selected_startup}")
+            plt.xticks(rotation=45, ha="right")
+
+            st.pyplot(fig2)
+
+
 else:
     selected_investor=st.sidebar.selectbox("Select Startup",sorted(set(df["Investors"].str.split(",").sum())))
     btn2=st.sidebar.button("Find Investor Details")
