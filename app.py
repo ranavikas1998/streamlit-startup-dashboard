@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
-st.slider("Select a value", 0, 100, 50)
+
 
 st.set_page_config(layout="wide",page_title="Startup Analysis")  # take the space website page title show in bro
 
